@@ -12,31 +12,23 @@ This is a GitHub (Classroom) managed project.
 ## Part 1 (Ausbaustufe 1)
 
 [Documented in SWK5-NextStop](https://github.com/swk5-2024ws/nextstop-bb-g2-heseltine/tree/main/SWK5-NextStop): Here just the headings (overview).
+- **Project Structure**
 
-### Project Structure
+- **Data Model**
+    - *Entity Relationships*
+    - *Additional Info About Relationships*
+    - *Table-Creation Script*
+    - *Initial Testdata*
 
-### Data Model
-
-#### Entity Relationships
-
-#### Additional Info Abouat Relationships
-
-#### Table-Creation Script
-
-#### Initial Testdata
-
-### Data Access Layer (DAL)
-
-#### Initial DAL-Testing
-
-#### Database Technology Choice
-
+- **Data Access Layer (DAL)**
+    - *Initial DAL-Testing*
+    - *Database Technology Choice*
 
 ## Part 2 
 
-Upcoming.
+Upcoming: This part of the documentation will go here and prepare the integration of the project with the front-end, considering conceptual direction as well. (See introductory note above.) 
 
-Documented (on-going) here: 
+**On-going documentation**:
 
 ## Outside Resources
 
