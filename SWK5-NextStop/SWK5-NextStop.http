@@ -1,0 +1,6 @@
+@SWK5_NextStop_HostAddress = http://localhost:5013
+
+GET {{SWK5_NextStop_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
