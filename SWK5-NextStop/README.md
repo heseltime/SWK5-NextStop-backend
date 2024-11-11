@@ -291,7 +291,3 @@ The db content becomes accessible at http://localhost:5013/swagger confirming th
 #### Database Technology Choice
 
 Postgres, managed via Postgres.app and Rider on MacOS, connection-string configuration in `appsettings`.
-
-## Outside Resources
-
-- https://www.youtube.com/watch?v=yGwGLcqcJ6Q
