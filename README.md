@@ -26,7 +26,25 @@ This is a GitHub (Classroom) managed project.
 
 ## Part 2 
 
-Upcoming: This part of the documentation will go here and prepare the integration of the project with the front-end, considering conceptual direction as well. (See introductory note above.) 
+The main focus of this part is adding the controllers and services in subdirectories to the main project, reflecting the main functionality subdivided in terms of Model and Controller, and also more sophisticated DTOs (Data Transfer Objects), 
+in the appropriate subdirectory to the Domain (project), building out the solution in a scalable and flexible manner.
+
+### Main Project
+- **Controller/**  
+  Handles HTTP requests and maps them to services.
+
+- **Service/**  
+  Contains business logic and orchestrates interactions with repositories.
+
+This project ends up with all the higher level code in this way, whereas the others have the lower-level functionality like reposiory, domain (see the following), infrastructure. Test remains in a project of its own, reflecting (logically) the cross-layer concern.
+
+### Domain Project
+- also contains **DTOs/**  
+  Stores DTOs for transferring data between layers.
+
+### Concept Questions Answered
+
+- 
 
 **On-going documentation**:
 

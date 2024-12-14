@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="xunit" Version="2.9.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -27,6 +28,10 @@
       <ProjectReference Include="..\SWK5-NextStop.DAL\SWK5-NextStop.DAL.csproj" />
       <ProjectReference Include="..\SWK5-NextStop.Domain\SWK5-NextStop.Domain.csproj" />
       <ProjectReference Include="..\SWK5-NextStop.Infrastructure\SWK5-NextStop.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Service\" />
     </ItemGroup>
 
 </Project>
