@@ -26,21 +26,44 @@ This is a GitHub (Classroom) managed project.
 
 ## Part 2 
 
-The main focus of this part is adding the controllers and services in subdirectories to the main project, reflecting the main functionality subdivided in terms of Model and Controller, and also more sophisticated DTOs (Data Transfer Objects), 
-in the appropriate subdirectory to the Domain (project), building out the solution in a scalable and flexible manner.
+The main focus of this part is adding the controllers, DTOs services in subdirectories to the main project, reflecting the main functionality subdivided in terms of Model and Controller, and also more sophisticated DTOs (Data Transfer Objects), building out the solution in a scalable and flexible manner.
 
 ### Main Project
 - **Controller/**  
   Handles HTTP requests and maps them to services.
 
 - **Service/**  
-  Contains business logic and orchestrates interactions with repositories.
+  Contains business **logic** and orchestrates interactions with repositories.
+- 
+- also contains **DTO/**  
+  Stores DTOs for transferring data between layers.
 
 This project ends up with all the higher level code in this way, whereas the others have the lower-level functionality like reposiory, domain (see the following), infrastructure. Test remains in a project of its own, reflecting (logically) the cross-layer concern.
 
-### Domain Project
-- also contains **DTOs/**  
-  Stores DTOs for transferring data between layers.
+Example DTO for a Domain class: **Holiday**, here the company (registering the holiday) is abstracted away by the DTO.
+
+```csharp
+public class HolidayDTO
+{
+    public int Id { get; set; }
+    public string? Description { get; set; }
+    public DateTime Date { get; set; }
+    public bool IsSchoolBreak { get; set; }
+}
+```
+
+```csharp
+public class Holiday
+{
+    public int Id  { get; set; }
+    public DateTime Date { get; set; }
+    public string? Description { get; set; }
+    public bool IsSchoolBreak { get; set; }
+    public int CompanyId { get; set; }
+}
+```
+
+A Mapper class (containing `ToDTO`/`ToDomain` methods), now also added to the main project (thus containing all the core API functionality), mediates between Domain and DTO: default values are not set, as a side-note.
 
 ### Concept Questions Answered
 

@@ -1,17 +1,17 @@
 namespace SWK5_NextStop.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using SWK5_NextStop.DAL;
+using SWK5_NextStop.Service;
 
 [ApiController]
 [Route("api/[controller]")]
 public class HolidayController : ControllerBase
 {
-    private readonly HolidayRepository _holidayRepository;
+    private readonly HolidayService _holidayService;
 
-    public HolidayController(HolidayRepository holidayRepository)
+    public HolidayController(HolidayService holidayService)
     {
-        _holidayRepository = holidayRepository;
+        _holidayService = holidayService;
     }
 
     /// <summary>
@@ -23,13 +23,13 @@ public class HolidayController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllHolidays()
     {
-        var holidays = await _holidayRepository.GetAllHolidaysAsync();
-        
+        var holidays = await _holidayService.GetAllHolidaysAsync();
+
         if (holidays == null || !holidays.Any())
         {
             return NotFound("No holidays found.");
         }
 
-        return Ok(holidays); // Map to DTOs if applicable
+        return Ok(holidays);
     }
 }

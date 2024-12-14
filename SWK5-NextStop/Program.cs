@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using SWK5_NextStop.DAL;
 using SWK5_NextStop.Infrastructure;
+using SWK5_NextStop.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,18 +13,24 @@ builder.Services.AddControllers(); // Enables controller support
 builder.Services.AddEndpointsApiExplorer(); // For minimal API endpoint documentation
 builder.Services.AddSwaggerGen(); // Enables Swagger for API documentation
 
-// Register repositories with dependency injection
+// Register repositories (with dependency injection) and other singletons
 builder.Services.AddSingleton<IConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("DefaultConnection");
     return new ConnectionFactory(connectionString);
 });
-
+// -- Repositories themselves
 builder.Services.AddSingleton<RouteRepository>();
 builder.Services.AddSingleton<HolidayRepository>();
 builder.Services.AddSingleton<StopRepository>();
 
+// -- Services
+builder.Services.AddSingleton<HolidayService>();
+builder.Services.AddSingleton<RouteService>();
+builder.Services.AddSingleton<StopService>();
+
+// Build the app
 var app = builder.Build();
 
 // Configure the HTTP request pipeline

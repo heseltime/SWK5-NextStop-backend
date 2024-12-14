@@ -30,8 +30,4 @@
       <ProjectReference Include="..\SWK5-NextStop.Infrastructure\SWK5-NextStop.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Service\" />
-    </ItemGroup>
-
 </Project>

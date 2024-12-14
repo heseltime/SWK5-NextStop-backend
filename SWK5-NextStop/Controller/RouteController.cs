@@ -1,17 +1,17 @@
 namespace SWK5_NextStop.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using SWK5_NextStop.DAL;
+using SWK5_NextStop.Service;
 
 [ApiController]
 [Route("api/[controller]")]
 public class RouteController : ControllerBase
 {
-    private readonly RouteRepository _routeRepository;
+    private readonly RouteService _routeService;
 
-    public RouteController(RouteRepository routeRepository)
+    public RouteController(RouteService routeService)
     {
-        _routeRepository = routeRepository;
+        _routeService = routeService;
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ public class RouteController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllRoutes()
     {
-        var routes = await _routeRepository.GetAllRoutesAsync();
+        var routes = await _routeService.GetAllRoutesAsync();
 
         if (routes == null || !routes.Any())
         {

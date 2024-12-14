@@ -1,17 +1,17 @@
 namespace SWK5_NextStop.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using SWK5_NextStop.DAL;
+using SWK5_NextStop.Service;
 
 [ApiController]
 [Route("api/[controller]")]
 public class StopController : ControllerBase
 {
-    private readonly StopRepository _stopRepository;
+    private readonly StopService _stopService;
 
-    public StopController(StopRepository stopRepository)
+    public StopController(StopService stopService)
     {
-        _stopRepository = stopRepository;
+        _stopService = stopService;
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ public class StopController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllStops()
     {
-        var stops = await _stopRepository.GetAllStopsAsync();
+        var stops = await _stopService.GetAllStopsAsync();
 
         if (stops == null || !stops.Any())
         {
