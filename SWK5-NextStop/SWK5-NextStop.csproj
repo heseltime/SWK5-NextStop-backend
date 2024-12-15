@@ -30,4 +30,13 @@
       <ProjectReference Include="..\SWK5-NextStop.Infrastructure\SWK5-NextStop.Infrastructure.csproj" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputPath>bin\Debug\net8.0\</OutputPath>
+    </PropertyGroup>
+
 </Project>

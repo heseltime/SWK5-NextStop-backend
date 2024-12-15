@@ -65,6 +65,10 @@ public class Holiday
 
 A Mapper class (containing `ToDTO`/`ToDomain` methods), now also added to the main project (thus containing all the core API functionality), mediates between Domain and DTO: default values are not set, as a side-note.
 
+### Testing Project
+
+**Controller-integration tests** (thereby also covering Services, DTOs and Mappers) were developed as part of Part 2: interesting here, since the resources are accessed over the network, this could be a separately developed solution as well, but is submitted as part of the one-solution hand-in for this class.
+
 ### Concept Questions Answered
 
 - 
