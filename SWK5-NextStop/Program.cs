@@ -19,8 +19,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var configuration = builder.Configuration;
-        options.Authority = "https://your-identity-provider-domain"; // Replace with your identity provider's domain
-        options.Audience = "your-audience"; // Replace with the API audience you configured
+        options.Authority = "https://dev-jkdeqiuo4mmcn3r8.us.auth0.com/";
+        options.Audience = "https://next-stop-khg/"; 
+        options.RequireHttpsMetadata = false; // Allow HTTP connections
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

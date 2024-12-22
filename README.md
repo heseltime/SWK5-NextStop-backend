@@ -71,6 +71,10 @@ A Mapper class (containing `ToDTO`/`ToDomain` methods), now also added to the ma
 
 **Controller-integration tests** (thereby also covering Services, DTOs and Mappers) were developed as part of Part 2: interesting here, since the resources are accessed over the network, this could be a separately developed solution as well, but is submitted as part of the one-solution hand-in for this class.
 
+### Authentication
+
+With JWT, OAuth & Open ID connect, using Auth0 Token Authority. Backend testing workflow: test the endpoint unauthenticated in Swagger, compare to token-authorized call in Postman.
+
 ### Concept Questions Answered
 
 - 
@@ -80,3 +84,4 @@ A Mapper class (containing `ToDTO`/`ToDomain` methods), now also added to the ma
 ## Outside Resources
 
 - https://www.youtube.com/watch?v=yGwGLcqcJ6Q
+- https://dev.to/kasuken/securing-net-6-minimal-api-with-auth0-4h5f
