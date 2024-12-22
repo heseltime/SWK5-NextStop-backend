@@ -3,6 +3,8 @@
 > 
 > **Status: Up to Date w/ 1st Hand-In November 2024**
 
+![bus-display-sketch.png](img/bus-display-sketch.png)
+
 # SWK5 NextStop (Jack Heseltine)
 
 This is a GitHub (Classroom) managed project.
