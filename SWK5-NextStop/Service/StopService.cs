@@ -89,4 +89,12 @@ public class StopService
         var stop = await _stopRepository.GetStopByIdAsync(id);
         return stop != null ? StopMapper.ToDTO(stop) : null;
     }
+    
+    public async Task<IEnumerable<StopDTO>> SearchStopsAsync(string? query, double? latitude, double? longitude)
+    {
+        var stops = await _stopRepository.SearchStopsAsync(query, latitude, longitude);
+
+        // Map the results to DTOs
+        return stops.Select(StopMapper.ToDTO);
+    }
 }

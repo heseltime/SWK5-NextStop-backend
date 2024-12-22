@@ -82,4 +82,24 @@ public class StopRepository
 
         return rowsAffected > 0;
     }
+    
+    public async Task<IEnumerable<Stop>> SearchStopsAsync(string? query, double? latitude, double? longitude)
+    {
+        string baseQuery = "SELECT * FROM stop WHERE 1=1";
+        var parameters = new List<QueryParameter>();
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            baseQuery += " AND (name ILIKE @query OR short_name ILIKE @query)";
+            parameters.Add(new QueryParameter("@query", $"%{query}%"));
+        }
+
+        if (latitude.HasValue && longitude.HasValue)
+        {
+            baseQuery += " AND gps_coordinates = @gpsCoordinates";
+            parameters.Add(new QueryParameter("@gpsCoordinates", $"{latitude},{longitude}"));
+        }
+
+        return await _adoTemplate.QueryAsync(baseQuery, MapRowToStop, parameters.ToArray());
+    }
 }

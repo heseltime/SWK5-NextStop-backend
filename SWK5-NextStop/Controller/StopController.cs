@@ -85,4 +85,27 @@ public class StopController : ControllerBase
 
         return NoContent(); // Indicates success with no response body
     }
+    
+    /// <summary>
+    /// Searches for stops by name, partial name, or GPS coordinates.
+    /// </summary>
+    /// <param name="query">The search query (name or part of name).</param>
+    /// <param name="latitude">The latitude for GPS search (optional).</param>
+    /// <param name="longitude">The longitude for GPS search (optional).</param>
+    /// <returns>A list of matching stops.</returns>
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SearchStops(string? query, double? latitude, double? longitude)
+    {
+        var stops = await _stopService.SearchStopsAsync(query, latitude, longitude);
+
+        if (stops == null || !stops.Any())
+        {
+            return NotFound("No stops match the search criteria.");
+        }
+
+        return Ok(stops);
+    }
+
 }
