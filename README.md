@@ -1,7 +1,7 @@
 > [!NOTE]  
 > Documentation Part 1 in Readme in SWK5-NextStop Sub-Project/-Directory 
 > 
-> **Status: Up to Date w/ 1st Hand-In November 2024**
+> **Status: Up to Date w/ 2nd Hand-In December 2024**
 
 ![bus-display-sketch.png](img/bus-display-sketch.png)
 
