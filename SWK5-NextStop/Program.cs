@@ -42,11 +42,14 @@ builder.Services.AddSingleton<IConnectionFactory>(sp =>
 builder.Services.AddSingleton<RouteRepository>();
 builder.Services.AddSingleton<HolidayRepository>();
 builder.Services.AddSingleton<StopRepository>();
+builder.Services.AddSingleton<ScheduleRepository>();
 
 // -- Services
 builder.Services.AddSingleton<HolidayService>();
 builder.Services.AddSingleton<RouteService>();
 builder.Services.AddSingleton<StopService>();
+builder.Services.AddSingleton<ScheduleService>();
+builder.Services.AddSingleton<IApiKeyValidator, ApiKeyValidator>();
 
 // Build the app
 var app = builder.Build();

@@ -88,14 +88,12 @@ CREATE TABLE stop (
 CREATE TABLE schedule (
     schedule_id SERIAL PRIMARY KEY,
     route_id INT,
-    start_stop INT,
-    end_stop INT,
+    validity_start DATE,
+    validity_stop DATE,
     date DATE NOT NULL,
     time TIME NOT NULL,
     connections INT,
-    FOREIGN KEY (route_id) REFERENCES route(route_id),
-    FOREIGN KEY (start_stop) REFERENCES stop(stop_id),
-    FOREIGN KEY (end_stop) REFERENCES stop(stop_id)
+    FOREIGN KEY (route_id) REFERENCES route(route_id)
 );
 
 CREATE TABLE check_in (

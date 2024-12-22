@@ -5,11 +5,19 @@ public class Schedule
     public int ScheduleId { get; set; }
     public int RouteId { get; set; }
     public Route Route { get; set; }
-    public int StartStopId { get; set; }
-    public Stop StartStop { get; set; }
-    public int EndStopId { get; set; }
-    public Stop EndStop { get; set; }
+    public DateOnly ValidityStart { get; set; }
+    public DateOnly ValidityStop { get; set; }
     public DateTime Date { get; set; }
-    public TimeSpan Time { get; set; }
-    public int Connections { get; set; }
+    public ICollection<RouteStopSchedule> RouteStopSchedules { get; set; } = new List<RouteStopSchedule>();
+}
+
+public class RouteStopSchedule
+{
+    public int RouteStopId { get; set; } // Composite key with ScheduleId
+    public int ScheduleId { get; set; }
+    public Schedule Schedule { get; set; }
+    public int StopId { get; set; }
+    public Stop Stop { get; set; }
+    public int SequenceNumber { get; set; } // Order of the stop in the route
+    public TimeOnly Time { get; set; } // The time to leave at this stop
 }

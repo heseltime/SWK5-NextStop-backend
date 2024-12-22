@@ -5,25 +5,34 @@ using SWK5_NextStop.DTO;
 
 public static class RouteMapper
 {
-    public static RouteDTO ToDTO(Route route)
-    {
-        return new RouteDTO
+    public static RouteDTO ToDTO(Route route) =>
+        new RouteDTO
         {
             RouteId = route.RouteId,
             RouteNumber = route.RouteNumber,
             ValidityPeriod = route.ValidityPeriod,
-            DayValidity = route.DayValidity
+            DayValidity = route.DayValidity,
+            CompanyId = route.CompanyId,
+            CompanyName = route.Company?.Name,
+            RouteStops = route.RouteStops?.Select(rs => new RouteStopDTO
+            {
+                StopId = rs.StopId,
+                SequenceNumber = rs.SequenceNumber
+            }).ToList() ?? new List<RouteStopDTO>()
         };
-    }
 
-    public static Route ToDomain(RouteDTO routeDTO)
-    {
-        return new Route
+    public static Route ToDomain(RouteDTO dto) =>
+        new Route
         {
-            RouteId = routeDTO.RouteId,
-            RouteNumber = routeDTO.RouteNumber,
-            ValidityPeriod = routeDTO.ValidityPeriod,
-            DayValidity = routeDTO.DayValidity
+            RouteId = dto.RouteId,
+            RouteNumber = dto.RouteNumber,
+            ValidityPeriod = dto.ValidityPeriod,
+            DayValidity = dto.DayValidity,
+            CompanyId = dto.CompanyId,
+            RouteStops = dto.RouteStops.Select(rs => new RouteStop
+            {
+                StopId = rs.StopId,
+                SequenceNumber = rs.SequenceNumber
+            }).ToList()
         };
-    }
 }
