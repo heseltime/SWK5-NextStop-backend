@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); // Enables controller support
 builder.Services.AddEndpointsApiExplorer(); // For minimal API endpoint documentation
 builder.Services.AddSwaggerGen(); // Enables Swagger for API documentation
+
+// Configure authentication with OAuth and OpenID Connect
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var configuration = builder.Configuration;
+        options.Authority = "https://your-identity-provider-domain"; // Replace with your identity provider's domain
+        options.Audience = "your-audience"; // Replace with the API audience you configured
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+    });
 
 // Register repositories (with dependency injection) and other singletons
 builder.Services.AddSingleton<IConnectionFactory>(sp =>
@@ -42,24 +59,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseAuthorization(); // Placeholder for future authentication/authorization
+
+// Add authentication and authorization middlewares
+app.UseAuthentication();
+app.UseAuthorization(); 
 
 // Map controller routes
 app.MapControllers();
 
-// Uncomment to add minimal API support (optional, if used alongside controllers)
-// app.MapGet("/weatherforecast", () => 
-//     Results.Ok(new List<WeatherForecast> 
-//     { 
-//         new WeatherForecast(DateOnly.FromDateTime(DateTime.Now), 25, "Sunny") 
-//     }));
-
 app.Run();
-
-// Record for minimal API example (optional, for testing purposes)
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
 
 public partial class Program { } // entry point to start the application under test
