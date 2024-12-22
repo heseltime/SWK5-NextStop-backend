@@ -38,20 +38,25 @@ public class StopRepository
         );
     }
     
-    public async Task<bool> CreateStopAsync(Stop stop)
+    public async Task<Stop> CreateStopAsync(Stop stop)
     {
         string query = @"
         INSERT INTO stop (name, short_name, gps_coordinates) 
-        VALUES (@name, @short_name, @gps_coordinates)";
+        VALUES (@name, @short_name, @gps_coordinates)
+        RETURNING stop_id;";
 
-        int rowsAffected = await _adoTemplate.ExecuteAsync(query,
+        // Execute the query and retrieve the generated stop_id
+        int generatedId = await _adoTemplate.ExecuteScalarAsync<int>(query,
             new QueryParameter("@name", stop.Name),
             new QueryParameter("@short_name", stop.ShortName),
             new QueryParameter("@gps_coordinates", stop.GpsCoordinates));
 
-        return rowsAffected > 0;
-    }
+        // Assign the generated ID to the Stop object
+        stop.StopId = generatedId;
 
+        return stop;
+    }
+    
     public async Task<bool> UpdateStopAsync(Stop stop)
     {
         string query = @"

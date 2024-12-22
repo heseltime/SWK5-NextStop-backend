@@ -71,6 +71,28 @@ public class AdoTemplate
             }
         }
     }
+    
+    public async Task<T> ExecuteScalarAsync<T>(string query, params QueryParameter[] parameters)
+    {
+        using (var connection = _connectionFactory.CreateConnection())
+        {
+            await connection.OpenAsync();
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                foreach (var param in parameters)
+                {
+                    var dbParameter = command.CreateParameter();
+                    dbParameter.ParameterName = param.Name;
+                    dbParameter.Value = param.Value;
+                    command.Parameters.Add(dbParameter);
+                }
+
+                var result = await command.ExecuteScalarAsync();
+                return (T)Convert.ChangeType(result, typeof(T));
+            }
+        }
+    }
 }
 
 public record QueryParameter(string Name, object Value);

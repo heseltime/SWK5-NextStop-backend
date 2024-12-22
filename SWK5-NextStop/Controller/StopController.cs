@@ -1,7 +1,9 @@
-namespace SWK5_NextStop.Controllers;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWK5_NextStop.Service;
+using SWK5_NextStop.DTO;
+
+namespace SWK5_NextStop.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -31,5 +33,56 @@ public class StopController : ControllerBase
         }
 
         return Ok(stops);
+    }
+
+    /// <summary>
+    /// Adds a new stop.
+    /// </summary>
+    /// <param name="stopDto">The stop to add.</param>
+    /// <returns>The created stop.</returns>
+    [HttpPost]
+    [Authorize] 
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddStop([FromBody] StopDTO stopDto)
+    {
+        if (stopDto == null || string.IsNullOrWhiteSpace(stopDto.Name))
+        {
+            return BadRequest("Invalid stop data.");
+        }
+
+        var createdStop = await _stopService.AddStopAsync(stopDto);
+
+        return CreatedAtAction(nameof(GetAllStops), new { id = createdStop.StopId }, createdStop);
+    }
+
+    /// <summary>
+    /// Updates an existing stop.
+    /// </summary>
+    /// <param name="id">The ID of the stop to update.</param>
+    /// <param name="stopDto">The updated stop data.</param>
+    /// <returns>A status indicating success or failure.</returns>
+    [HttpPut("{id}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateStop(int id, [FromBody] StopDTO stopDto)
+    {
+        if (stopDto == null || id <= 0 || string.IsNullOrWhiteSpace(stopDto.Name))
+        {
+            return BadRequest("Invalid stop data.");
+        }
+
+        var existingStop = await _stopService.GetStopByIdAsync(id);
+
+        if (existingStop == null)
+        {
+            return NotFound($"Stop with ID {id} not found.");
+        }
+
+        await _stopService.UpdateStopAsync(id, stopDto);
+
+        return NoContent(); // Indicates success with no response body
     }
 }
