@@ -51,6 +51,18 @@ builder.Services.AddSingleton<StopService>();
 builder.Services.AddSingleton<ScheduleService>();
 builder.Services.AddSingleton<IApiKeyValidator, ApiKeyValidator>();
 
+// CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Allow only Angular app
+            .AllowAnyHeader() // Allow all headers
+            .AllowAnyMethod(); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    });
+});
+
 // Build the app
 var app = builder.Build();
 
@@ -62,6 +74,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAngularApp"); // Apply the CORS policy
 app.UseRouting();
 
 // Add authentication and authorization middlewares
