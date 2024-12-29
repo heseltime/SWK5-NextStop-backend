@@ -120,13 +120,13 @@ public class ScheduleRepository
     public async Task<IEnumerable<Schedule>> GetNextConnectionsAsync(int stopId, DateTime dateTime, int count)
     {
         string query = @"
-        SELECT DISTINCT s.*, rss.time AS stop_time
-        FROM schedule s
-        JOIN route_stop_schedule rss ON s.schedule_id = rss.schedule_id
-        WHERE rss.stop_id = @stopId
-          AND (s.date > @date OR (s.date = @date AND rss.time > @time))
-        ORDER BY s.date, rss.time
-        LIMIT @count;";
+            SELECT DISTINCT s.*, (s.date + rss.time) AS stop_time
+            FROM schedule s
+            JOIN route_stop_schedule rss ON s.schedule_id = rss.schedule_id
+            WHERE rss.stop_id = @stopId
+              AND (s.date > @date OR (s.date = @date AND rss.time > @time))
+            ORDER BY stop_time
+            LIMIT @count;";
 
         return await _adoTemplate.QueryAsync(query, reader =>
             {
@@ -135,16 +135,18 @@ public class ScheduleRepository
                 {
                     new RouteStopSchedule
                     {
-                        Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("time")))
+                        Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("stop_time")))
                     }
                 };
                 return schedule;
             },
             new QueryParameter("@stopId", stopId),
             new QueryParameter("@date", dateTime.Date),
-            new QueryParameter("@time", TimeOnly.FromDateTime(dateTime)),
+            new QueryParameter("@time", dateTime.TimeOfDay),
             new QueryParameter("@count", count));
     }
+
+
     
     public async Task<int> SaveCheckInAsync(CheckIn checkIn)
     {

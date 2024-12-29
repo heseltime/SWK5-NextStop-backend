@@ -14,7 +14,6 @@ public static class ScheduleMapper
             RouteStopSchedules = schedule.RouteStopSchedules.Select(rss => new RouteStopScheduleDTO
             {
                 StopId = rss.StopId,
-                StopName = rss.Stop.Name,
                 SequenceNumber = rss.SequenceNumber,
                 Time = rss.Time
             }).ToList()
