@@ -85,7 +85,33 @@ public class ScheduleService
         var schedules = await _scheduleRepository.GetNextConnectionsAsync(stopId, dateTime, count);
 
         // Map the result to DTOs
-        return schedules.Select(ScheduleMapper.ToDTO);
+        //return schedules.Select(ScheduleMapper.ToDTO);
+        var results = new List<ScheduleDTO>();
+        foreach (var schedule in schedules)
+        {
+            var remainingStops = await _scheduleRepository.GetRemainingStopsAsync(schedule.ScheduleId, stopId);
+            var newScheduleDto = new ScheduleDTO()
+            {
+                ScheduleId = schedule.ScheduleId,
+                RouteId = schedule.RouteId,
+                Date = schedule.Date,
+                RouteStopSchedules = new List<RouteStopScheduleDTO>()
+            };
+
+            foreach (var remainingStop in remainingStops)
+            {
+                newScheduleDto.RouteStopSchedules.Add(new RouteStopScheduleDTO()
+                {
+                    StopId = remainingStop.StopId,
+                    SequenceNumber = remainingStop.SequenceNumber,
+                    Time = remainingStop.Time,
+                });
+            }
+            
+            results.Add(newScheduleDto);
+        }
+
+        return results;
     }
     
     public async Task<int> HandleCheckInAsync(CheckInDTO checkInDto)

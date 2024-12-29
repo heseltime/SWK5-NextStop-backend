@@ -21,6 +21,8 @@ public class ScheduleRepository
             ScheduleId = reader.GetInt32(reader.GetOrdinal("schedule_id")),
             RouteId = reader.GetInt32(reader.GetOrdinal("route_id")),
             Date = reader.GetDateTime(reader.GetOrdinal("date")),
+            ValidityStart = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("validity_start"))),
+            ValidityStop = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("validity_stop"))),
         };
 
     private RouteStopSchedule MapRowToRouteStopSchedule(DbDataReader reader) =>
@@ -100,15 +102,7 @@ public class ScheduleRepository
     public async Task<IEnumerable<Schedule>> FindSchedulesByTimeAsync(int startStopId, int endStopId, TimeOnly startTime, TimeOnly arrivalTime)
     {
         string query = @"
-        SELECT DISTINCT s.*
-        FROM schedule s
-        JOIN route_stop_schedule rss_start ON s.schedule_id = rss_start.schedule_id
-        JOIN route_stop_schedule rss_end ON s.schedule_id = rss_end.schedule_id
-        WHERE rss_start.stop_id = @startStopId
-          AND rss_end.stop_id = @endStopId
-          AND rss_start.sequence_number < rss_end.sequence_number
-          AND rss_start.time >= @startTime
-          AND rss_end.time <= @arrivalTime";
+        ";
 
         return await _adoTemplate.QueryAsync(query, MapRowToSchedule,
             new QueryParameter("@startStopId", startStopId),
@@ -120,7 +114,7 @@ public class ScheduleRepository
     public async Task<IEnumerable<Schedule>> GetNextConnectionsAsync(int stopId, DateTime dateTime, int count)
     {
         string query = @"
-            SELECT DISTINCT s.*, (s.date + rss.time) AS stop_time
+            SELECT s.*, (s.date + rss.time) AS stop_time
             FROM schedule s
             JOIN route_stop_schedule rss ON s.schedule_id = rss.schedule_id
             WHERE rss.stop_id = @stopId
@@ -131,13 +125,6 @@ public class ScheduleRepository
         return await _adoTemplate.QueryAsync(query, reader =>
             {
                 var schedule = MapRowToSchedule(reader);
-                schedule.RouteStopSchedules = new List<RouteStopSchedule>
-                {
-                    new RouteStopSchedule
-                    {
-                        Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("stop_time")))
-                    }
-                };
                 return schedule;
             },
             new QueryParameter("@stopId", stopId),
@@ -146,6 +133,34 @@ public class ScheduleRepository
             new QueryParameter("@count", count));
     }
 
+    public async Task<IEnumerable<RouteStopSchedule>> GetRemainingStopsAsync(int scheduleId, int stopId)
+    {
+        string query = @"
+    SELECT rss.*, (CURRENT_DATE + rss.time) AS stop_time
+    FROM route_stop_schedule rss
+    WHERE rss.schedule_id = @scheduleId
+      AND rss.sequence_number >= (
+          SELECT sequence_number
+          FROM route_stop_schedule
+          WHERE stop_id = @stopId AND schedule_id = @scheduleId
+          LIMIT 1
+      )
+    ORDER BY rss.sequence_number;";
+
+        return await _adoTemplate.QueryAsync(query, reader =>
+            {
+                return new RouteStopSchedule
+                {
+                    RouteStopId = reader.GetInt32(reader.GetOrdinal("route_stop_id")),
+                    ScheduleId = reader.GetInt32(reader.GetOrdinal("schedule_id")),
+                    StopId = reader.GetInt32(reader.GetOrdinal("stop_id")),
+                    SequenceNumber = reader.GetInt32(reader.GetOrdinal("sequence_number")),
+                    Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("stop_time")))
+                };
+            },
+            new QueryParameter("@scheduleId", scheduleId),
+            new QueryParameter("@stopId", stopId));
+    }
 
     
     public async Task<int> SaveCheckInAsync(CheckIn checkIn)
