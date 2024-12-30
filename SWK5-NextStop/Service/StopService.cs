@@ -29,6 +29,18 @@ public class StopService
             .Select(StopMapper.ToDTO)
             .ToList();
     }
+    
+    /// <summary>
+    /// Retrieves a stop by id
+    /// </summary>
+    /// <returns>A stop DTO.</returns>
+    public async Task<StopDTO> GetStopAsync(int id)
+    {
+        var stop = await _stopRepository.GetStopByIdAsync(id);
+
+        // Example business logic: Filter or transform stops if needed
+        return StopMapper.ToDTO(stop);
+    }
 
     /// <summary>
     /// Adds a new stop.

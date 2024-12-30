@@ -34,6 +34,25 @@ public class StopController : ControllerBase
 
         return Ok(stops);
     }
+    
+    /// <summary>
+    /// Retrieves stop by Id
+    /// </summary>
+    /// <returns>A stop.</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetStops(int id)
+    {
+        var stop = await _stopService.GetStopAsync(id);
+
+        if (stop == null)
+        {
+            return NotFound("No stop found.");
+        }
+
+        return Ok(stop);
+    }
 
     /// <summary>
     /// Adds a new stop.
