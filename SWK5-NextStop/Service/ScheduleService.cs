@@ -61,7 +61,32 @@ public class ScheduleService
     public async Task<IEnumerable<ScheduleDTO>> GetAllSchedulesAsync()
     {
         var schedules = await _scheduleRepository.GetAllSchedulesAsync();
-        return schedules.Select(ScheduleMapper.ToDTO);
+        var results = new List<ScheduleDTO>();
+        foreach (var schedule in schedules)
+        {
+            var remainingStops = await _scheduleRepository.GetStopsAsync(schedule.ScheduleId);
+            var newScheduleDto = new ScheduleDTO()
+            {
+                ScheduleId = schedule.ScheduleId,
+                RouteId = schedule.RouteId,
+                Date = schedule.Date,
+                RouteStopSchedules = new List<RouteStopScheduleDTO>()
+            };
+
+            foreach (var remainingStop in remainingStops)
+            {
+                newScheduleDto.RouteStopSchedules.Add(new RouteStopScheduleDTO()
+                {
+                    StopId = remainingStop.StopId,
+                    SequenceNumber = remainingStop.SequenceNumber,
+                    Time = remainingStop.Time,
+                });
+            }
+            
+            results.Add(newScheduleDto);
+        }
+
+        return results;
     }
     
     public async Task<IEnumerable<ScheduleDTO>> FindSchedulesBetweenStopsAsync(int startStopId, int endStopId)

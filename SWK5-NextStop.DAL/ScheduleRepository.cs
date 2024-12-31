@@ -161,6 +161,28 @@ public class ScheduleRepository
             new QueryParameter("@scheduleId", scheduleId),
             new QueryParameter("@stopId", stopId));
     }
+    
+    public async Task<IEnumerable<RouteStopSchedule>> GetStopsAsync(int scheduleId)
+    {
+        string query = @"
+    SELECT rss.*, (CURRENT_DATE + rss.time) AS stop_time
+    FROM route_stop_schedule rss
+    WHERE rss.schedule_id = @scheduleId
+    ORDER BY rss.sequence_number;";
+
+        return await _adoTemplate.QueryAsync(query, reader =>
+            {
+                return new RouteStopSchedule
+                {
+                    RouteStopId = reader.GetInt32(reader.GetOrdinal("route_stop_id")),
+                    ScheduleId = reader.GetInt32(reader.GetOrdinal("schedule_id")),
+                    StopId = reader.GetInt32(reader.GetOrdinal("stop_id")),
+                    SequenceNumber = reader.GetInt32(reader.GetOrdinal("sequence_number")),
+                    Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("stop_time")))
+                };
+            },
+            new QueryParameter("@scheduleId", scheduleId));
+    }
 
     
     public async Task<int> SaveCheckInAsync(CheckIn checkIn)
