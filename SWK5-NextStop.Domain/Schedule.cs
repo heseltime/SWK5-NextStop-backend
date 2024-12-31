@@ -5,8 +5,8 @@ public class Schedule
     public int ScheduleId { get; set; }
     public int RouteId { get; set; }
     public Route Route { get; set; }
-    public DateOnly ValidityStart { get; set; }
-    public DateOnly ValidityStop { get; set; }
+    public DateTime ValidityStart { get; set; }
+    public DateTime ValidityStop { get; set; }
     public DateTime Date { get; set; }
     public ICollection<RouteStopSchedule> RouteStopSchedules { get; set; } = new List<RouteStopSchedule>();
 }

@@ -167,5 +167,41 @@ public class ScheduleService
         var checkIn = CheckInMapper.ToDomain(checkInDto);
         return await _scheduleRepository.SaveCheckInAsync(checkIn);
     }
+    
+    public async Task UpdateScheduleAsync(int id, ScheduleDTO scheduleDto)
+    {
+        if (scheduleDto == null || id != scheduleDto.ScheduleId)
+        {
+            throw new ArgumentException("Schedule ID mismatch or invalid schedule data.");
+        }
 
+        // Fetch the existing schedule
+        var existingSchedule = await _scheduleRepository.GetScheduleByIdAsync(id);
+
+        if (existingSchedule == null)
+        {
+            throw new KeyNotFoundException($"Schedule with ID {id} not found.");
+        }
+
+        // Map updated fields from DTO to the existing schedule
+        existingSchedule.RouteId = scheduleDto.RouteId;
+        existingSchedule.Date = scheduleDto.Date;
+        existingSchedule.ValidityStart = scheduleDto.ValidityStart;
+        existingSchedule.ValidityStop = scheduleDto.ValidityStop;
+
+        // Update route stop schedules
+        existingSchedule.RouteStopSchedules.Clear();
+        foreach (var stop in scheduleDto.RouteStopSchedules)
+        {
+            existingSchedule.RouteStopSchedules.Add(new RouteStopSchedule
+            {
+                StopId = stop.StopId,
+                SequenceNumber = stop.SequenceNumber,
+                Time = new TimeOnly(stop.Time.Hour, stop.Time.Minute)
+            });
+        }
+
+        // Save the updated schedule in the repository
+        await _scheduleRepository.UpdateScheduleAsync(existingSchedule);
+    }
 }

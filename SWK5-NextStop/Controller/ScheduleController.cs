@@ -161,5 +161,41 @@ public class ScheduleController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing the check-in.");
         }
     }
+    
+    /// <summary>
+    /// Updates an existing schedule.
+    /// </summary>
+    /// <param name="id">The ID of the schedule to update.</param>
+    /// <param name="scheduleDto">The updated schedule data.</param>
+    /// <returns>The updated schedule or an error response.</returns>
+    [HttpPut("{id}")]
+    [Authorize] // Requires authentication
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSchedule(int id, [FromBody] ScheduleDTO scheduleDto)
+    {
+        if (scheduleDto == null || id <= 0 || scheduleDto.ScheduleId != id)
+        {
+            return BadRequest("Invalid schedule data.");
+        }
+
+        var existingSchedule = await _scheduleService.GetScheduleByIdAsync(id);
+
+        if (existingSchedule == null)
+        {
+            return NotFound($"Schedule with ID {id} not found.");
+        }
+
+        try
+        {
+            await _scheduleService.UpdateScheduleAsync(id, scheduleDto);
+            return NoContent(); // Indicates successful update with no content to return
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while updating the schedule: {ex.Message}");
+        }
+    }
 
 }

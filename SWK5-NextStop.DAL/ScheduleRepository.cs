@@ -21,8 +21,8 @@ public class ScheduleRepository
             ScheduleId = reader.GetInt32(reader.GetOrdinal("schedule_id")),
             RouteId = reader.GetInt32(reader.GetOrdinal("route_id")),
             Date = reader.GetDateTime(reader.GetOrdinal("date")),
-            ValidityStart = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("validity_start"))),
-            ValidityStop = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("validity_stop"))),
+            ValidityStart = reader.GetDateTime(reader.GetOrdinal("validity_start")),
+            ValidityStop = reader.GetDateTime(reader.GetOrdinal("validity_stop")),
         };
 
     private RouteStopSchedule MapRowToRouteStopSchedule(DbDataReader reader) =>
@@ -31,19 +31,21 @@ public class ScheduleRepository
             ScheduleId = reader.GetInt32(reader.GetOrdinal("schedule_id")),
             StopId = reader.GetInt32(reader.GetOrdinal("stop_id")),
             SequenceNumber = reader.GetInt32(reader.GetOrdinal("sequence_number")),
-            Time = TimeOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("time")))
+            Time = reader.GetFieldValue<TimeOnly>(reader.GetOrdinal("time"))
         };
 
     public async Task<Schedule> CreateScheduleAsync(Schedule schedule)
     {
         string query = @"
-            INSERT INTO schedule (route_id, date)
-            VALUES (@routeId, @date)
+            INSERT INTO schedule (route_id, date, validity_start, validity_stop)
+            VALUES (@routeId, @date, @validityStart, @validityStop)
             RETURNING schedule_id;";
 
         int generatedId = await _adoTemplate.ExecuteScalarAsync<int>(query,
             new QueryParameter("@routeId", schedule.RouteId),
-            new QueryParameter("@date", schedule.Date));
+            new QueryParameter("@date", schedule.Date),
+            new QueryParameter("@validityStart", schedule.ValidityStart),
+            new QueryParameter("@validityStop", schedule.ValidityStop));
 
         schedule.ScheduleId = generatedId;
         return schedule;
@@ -214,5 +216,45 @@ public class ScheduleRepository
             new QueryParameter("@stopId", stopId));
 
         return count > 0;
+    }
+    
+    public async Task UpdateScheduleAsync(Schedule schedule)
+    {
+        string updateScheduleQuery = @"
+        UPDATE schedule
+        SET route_id = @routeId,
+            date = @date,
+            validity_start = @validityStart,
+            validity_stop = @validityStop
+        WHERE schedule_id = @scheduleId;";
+
+        await _adoTemplate.ExecuteAsync(updateScheduleQuery,
+            new QueryParameter("@routeId", schedule.RouteId),
+            new QueryParameter("@date", schedule.Date),
+            new QueryParameter("@validityStart", schedule.ValidityStart),
+            new QueryParameter("@validityStop", schedule.ValidityStop),
+            new QueryParameter("@scheduleId", schedule.ScheduleId));
+
+        // Remove existing route stop schedules for the schedule
+        string deleteRouteStopSchedulesQuery = @"
+        DELETE FROM route_stop_schedule
+        WHERE schedule_id = @scheduleId;";
+
+        await _adoTemplate.ExecuteAsync(deleteRouteStopSchedulesQuery,
+            new QueryParameter("@scheduleId", schedule.ScheduleId));
+
+        // Add the new route stop schedules
+        string insertRouteStopSchedulesQuery = @"
+        INSERT INTO route_stop_schedule (schedule_id, stop_id, sequence_number, time)
+        VALUES (@scheduleId, @stopId, @sequenceNumber, @time);";
+
+        foreach (var routeStop in schedule.RouteStopSchedules)
+        {
+            await _adoTemplate.ExecuteAsync(insertRouteStopSchedulesQuery,
+                new QueryParameter("@scheduleId", schedule.ScheduleId),
+                new QueryParameter("@stopId", routeStop.StopId),
+                new QueryParameter("@sequenceNumber", routeStop.SequenceNumber),
+                new QueryParameter("@time", routeStop.Time));
+        }
     }
 }

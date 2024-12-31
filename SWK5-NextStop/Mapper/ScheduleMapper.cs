@@ -25,6 +25,8 @@ public static class ScheduleMapper
             ScheduleId = dto.ScheduleId,
             RouteId = dto.RouteId,
             Date = dto.Date,
+            ValidityStart = dto.ValidityStart,
+            ValidityStop = dto.ValidityStop,
             RouteStopSchedules = dto.RouteStopSchedules.Select(rss => new RouteStopSchedule
             {
                 StopId = rss.StopId,
